@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ] # 监听 main 分支的 push 事件
+  workflow_dispatch: # 允许手动触发
+
+permissions: # 授予工作流必要的权限
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # 第一个任务：构建项目
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 下载你的代码到虚拟机
+      - name: Checkout your repository using git
+        uses: actions/checkout@v4
+      # 2. 使用 Astro 官方的 Action 来安装依赖、构建项目
+      - name: Install, build, and upload your site
+        uses: withastro/action@v3
+        # with:
+          # path: . 
+          # node-version: 20 
+          # package-manager: pnpm@latest 
+
+  # 第二个任务：部署项目
+  deploy:
+    needs: build # 依赖 build 任务，必须等 build 成功后才运行
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
