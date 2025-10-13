@@ -116,6 +116,10 @@
     @apply cursor-zoom-in
 }
 
+#post-cover {
+    @apply max-h-[16rem] flex items-center justify-center
+}
+
 ::selection {
     background-color: var(--selection-bg)
 }
