@@ -5,7 +5,7 @@ slug: example
 description: "I am a 2025 UTSC GreenPath student. Here I record my own course selection experience that I figured out through exploration. Hope this helps you."
 image: "./cover.webp"
 tags: ["创作", "工具"]
-category: 知行合一
+category: UTSC
 draft: false
 ---
 

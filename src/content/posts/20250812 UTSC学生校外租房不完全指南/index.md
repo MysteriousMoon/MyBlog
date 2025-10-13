@@ -5,7 +5,7 @@ slug: utsc-off-campus-housing-guide
 description: "记录本人租房的一点点经历"
 image: "./cover.webp"
 tags: ["工具", "随想"]
-category: 知行合一
+category: UTSC
 draft: false
 ---
 

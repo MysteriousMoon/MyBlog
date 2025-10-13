@@ -5,7 +5,7 @@ slug: utsc-fall-2025-course-deadlines
 description: "课程DDL，以及碎碎念"
 image: "./cover.webp"
 tags: ["工具", "随想"]
-category: 心情随笔
+category: UTSC
 draft: false
 ---
 
