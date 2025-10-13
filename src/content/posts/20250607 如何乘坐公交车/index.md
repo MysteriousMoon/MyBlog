@@ -24,7 +24,7 @@ draft: false
     - [绿色圆圈] 常规车站 (Regular station)
     - [绿色圆圈带黄色方块] 换乘车站 (Interchange station)
 
-![CleanShot 2025-06-07 at 15.38.29@2x.png](pic/CleanShot_2025-06-07_at_15.38.292x.webp)
+![CleanShot 2025-06-07 at 15.38.29@2x.png](./pic/CleanShot_2025-06-07_at_15.38.292x.webp)
 
 ## 这边的公交车有多个种类，以及分支（同样取自图例）：
 
@@ -67,16 +67,16 @@ draft: false
 <table style="width:100%; border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td style="width:25%; padding:5px; border: none;">
-      <img src="pic/3021749327590.webp" alt="Image 1" style="width:100%;">
+      <img src="./pic/3021749327590.webp" alt="Image 1" style="width:100%;">
     </td>
     <td style="width:25%; padding:5px; border: none;">
-      <img src="pic/3011749327584.webp" alt="Image 2" style="width:100%;">
+      <img src="./pic/3011749327584.webp" alt="Image 2" style="width:100%;">
     </td>
     <td style="width:25%; padding:5px; border: none;">
-      <img src="pic/3031749327689.webp" alt="Image 3" style="width:100%;">
+      <img src="./pic/3031749327689.webp" alt="Image 3" style="width:100%;">
     </td>
     <td style="width:25%; padding:5px; border: none;">
-      <img src="pic/3041749327691.webp" alt="Image 4" style="width:100%;">
+      <img src="./pic/3041749327691.webp" alt="Image 4" style="width:100%;">
     </td>
   </tr>
 </table>
@@ -93,13 +93,13 @@ draft: false
 <table style="width:100%; border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td style="width:33.33%; padding:5px; border: none;">
-      <img src="pic/3071749329093.webp" alt="Image 1" style="width:100%;">
+      <img src="./pic/3071749329093.webp" alt="Image 1" style="width:100%;">
     </td>
     <td style="width:33.33%; padding:5px; border: none;">
-      <img src="pic/3081749329095.webp" alt="Image 2" style="width:100%;">
+      <img src="./pic/3081749329095.webp" alt="Image 2" style="width:100%;">
     </td>
     <td style="width:33.33%; padding:5px; border: none;">
-      <img src="pic/3091749329096.webp" alt="Image 3" style="width:100%;">
+      <img src="./pic/3091749329096.webp" alt="Image 3" style="width:100%;">
     </td>
   </tr>
 </table>
@@ -149,4 +149,4 @@ TTC（多伦多交通局）的转乘（Transfer）政策旨在让乘客在**两�
         - 部分Shoppers Drug Mart或其他参与PRESTO销售的零售点
     - 工作人员会帮你将你的PRESTO卡的票价类型设置为“青年”，且会持续到你20岁生日。
 - **优惠幅度：**
-    - **TTC（多伦多）：** PRESTO的青年票价为$2.35，而成人票价为$3.30。
+    - **TTC（多伦多）：** PRESTO的青年票价为\$2.35，而成人票价为\$3.30。
