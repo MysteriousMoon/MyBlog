@@ -64,22 +64,8 @@ draft: false
 
 根据发车时间计划出行即可。（最好导航到乘车点，小心坐反。）
 
-<table style="width:100%; border: none; border-collapse: collapse;">
-  <tr style="border: none;">
-    <td style="width:25%; padding:5px; border: none;">
-      <img src="./pic/3021749327590.webp" alt="Image 1" style="width:100%;">
-    </td>
-    <td style="width:25%; padding:5px; border: none;">
-      <img src="./pic/3011749327584.webp" alt="Image 2" style="width:100%;">
-    </td>
-    <td style="width:25%; padding:5px; border: none;">
-      <img src="./pic/3031749327689.webp" alt="Image 3" style="width:100%;">
-    </td>
-    <td style="width:25%; padding:5px; border: none;">
-      <img src="./pic/3041749327691.webp" alt="Image 4" style="width:100%;">
-    </td>
-  </tr>
-</table>
+![final_image_1](./pic/final_image_1.webp)
+
 
 
 ### 2.单独查找公交路线
@@ -90,19 +76,8 @@ draft: false
 
 切记乘车点位置，以及方向选择。
 
-<table style="width:100%; border: none; border-collapse: collapse;">
-  <tr style="border: none;">
-    <td style="width:33.33%; padding:5px; border: none;">
-      <img src="./pic/3071749329093.webp" alt="Image 1" style="width:100%;">
-    </td>
-    <td style="width:33.33%; padding:5px; border: none;">
-      <img src="./pic/3081749329095.webp" alt="Image 2" style="width:100%;">
-    </td>
-    <td style="width:33.33%; padding:5px; border: none;">
-      <img src="./pic/3091749329096.webp" alt="Image 3" style="width:100%;">
-    </td>
-  </tr>
-</table>
+![final_image_1](./pic/final_image_2.webp)
+
 
 ## 其余APP：
 
