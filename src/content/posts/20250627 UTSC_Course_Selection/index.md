@@ -1,7 +1,7 @@
 ---
 title: UTSC Course Selection 选课较完全经验
 published: 2025-06-27
-slug: example
+slug: utsc-course-selection-guide
 description: "I am a 2025 UTSC GreenPath student. Here I record my own course selection experience that I figured out through exploration. Hope this helps you."
 image: "./cover.webp"
 tags: ["创作", "工具"]
