@@ -5,6 +5,7 @@ import { url } from "../../utils/url-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 
 const config = profileConfig;
+const bioArray = Array.isArray(config.bio) ? config.bio : [config.bio];
 ---
 <div class="card-base p-3">
     <a aria-label="Go to About Page" href={url('/about/')}
@@ -21,7 +22,7 @@ const config = profileConfig;
     <div class="px-2">
         <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">{config.name}</div>
         <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div>
-        <div class="text-center text-neutral-400 mb-2.5 transition">{config.bio}</div>
+        <div id="bio-text" class="text-center text-neutral-400 mb-2.5 transition">{bioArray[0]}</div>
         <div class="flex flex-wrap gap-2 justify-center mb-1">
             {config.links.length > 1 && config.links.map(item =>
                     <a rel="me" aria-label={item.name} href={item.url} target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90">
@@ -37,3 +38,10 @@ const config = profileConfig;
     </div>
 </div>
 
+<script define:vars={{ bios: bioArray }}>
+    const bioElement = document.getElementById('bio-text');
+    if (bioElement && bios && bios.length > 0) {
+        const randomIndex = Math.floor(Math.random() * bios.length);
+        bioElement.innerText = bios[randomIndex];
+    }
+</script>
