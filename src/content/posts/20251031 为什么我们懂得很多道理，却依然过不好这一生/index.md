@@ -1,6 +1,6 @@
 ---
 title: 为什么我们懂得很多道理，却依然过不好这一生？
-published: 2025.11.04
+published: 2025-11-04
 slug: example
 description: "How to use this blog template."
 image: "./cover.webp"

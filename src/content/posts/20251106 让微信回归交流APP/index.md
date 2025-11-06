@@ -1,6 +1,6 @@
 ---
 title: 让微信回归交流APP的方法
-published: 2025.11.06
+published: 2025-11-06
 slug: wechat-declutter-guide
 description: 如何彻底关闭公众号和朋友圈，以及一些杂项
 image: "./cover.webp"
