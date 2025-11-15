@@ -1,5 +1,5 @@
 ---
-title:"UTSC学生如何应对和防范钓鱼邮件"
+title: UTSC学生如何应对和防范钓鱼邮件
 published: 2025-11-14
 slug: utsc-phishing-response-prevention
 description: "一次亲历的多伦多大学邮箱钓鱼事件，以及从上报、账户修复到长期防范（如GAL设置）的完整应对指南。"
