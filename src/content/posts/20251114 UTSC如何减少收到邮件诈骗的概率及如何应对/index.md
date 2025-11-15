@@ -1,6 +1,6 @@
 ---
 title: 20251114 UTSC及如何应对及如何减少收到邮件诈骗的概率
-published: 2025-11-04
+published: 2025-11-14
 slug: utsc-phishing-response-prevention
 description: "一次亲历的多伦多大学邮箱钓鱼事件，以及从上报、账户修复到长期防范（如GAL设置）的完整应对指南。"
 image: "./cover.webp"
