@@ -1,5 +1,5 @@
 import rss from "@astrojs/rss";
-import { getSortedPosts, getPostSlug } from "@utils/content-utils";
+import { getPostSlug, getSortedPosts } from "@utils/content-utils";
 import { url } from "@utils/url-utils";
 import type { APIContext } from "astro";
 import MarkdownIt from "markdown-it";
