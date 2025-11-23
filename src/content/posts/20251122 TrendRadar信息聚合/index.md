@@ -15,8 +15,8 @@ draft: false
 
 🔗 快速访问
 
-* **在线演示**：[点击访问 TrendRadar](https://mysteriousmoon.github.io/TrendRadar/)
-* **RSS 订阅**：[点击获取 RSS 地址](https://mysteriousmoon.github.io/TrendRadar/rss.xml)
+* **在线演示**：[点击访问 TrendRadar](https://trendradar.techleaf.xyz/)
+* **RSS 订阅**：[点击获取 RSS 地址](https://trendradar.techleaf.xyz/rss.xml)
 
 下述介绍内容以我修改后的为主：
 
@@ -51,9 +51,9 @@ draft: false
 
 如果你不想折腾代码，可以直接访问我已经部署好的服务：
 
-* **最新热点**：[https://mysteriousmoon.github.io/TrendRadar/](https://mysteriousmoon.github.io/TrendRadar/)
-* **历史归档**：[Archive 页面](https://mysteriousmoon.github.io/TrendRadar/archive/index.html)
-* **RSS 订阅**：`https://mysteriousmoon.github.io/TrendRadar/rss.xml`
+* **最新热点**：[https://trendradar.techleaf.xyz/](https://trendradar.techleaf.xyz/)
+* **历史归档**：[Archive 页面](https://trendradar.techleaf.xyz/archive/index.html)
+* **RSS 订阅**：`https://trendradar.techleaf.xyz/rss.xml`
 
 > **⚠️ 注意事项**：
 > 本项目服务器时间基于 **加拿大多伦多时间 (EST/EDT)**，与中国时间存在时差，请在查看更新时间时留意。
