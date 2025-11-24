@@ -1,5 +1,5 @@
 ---
-title: 如何把YouTube、个人播客、新闻站点装进一个APP里——“RSS” 入门教程
+title: “RSS” 入门教程——如何把YouTube、个人播客、新闻站点装进一个APP里
 published: 2025-11-23
 slug: rss-guide-tools-rsshub
 description: "RSS-它能帮你将B站、知乎、博客甚至交易所公告聚合在一处。省去四处跑网站的烦恼，从零打造专属的阅读流。"
