@@ -136,6 +136,12 @@ const bannerOffset =
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+
+			// Load the game visibility preference from local storage
+			const GAME_STORAGE_KEY = 'fuwari-hide-games-preference';
+			if (localStorage.getItem(GAME_STORAGE_KEY) === 'true') {
+				document.documentElement.classList.add('hide-games');
+			}
 		</script>
 		<style define:vars={{
 			configHue,
@@ -404,7 +410,15 @@ const setup = () => {
 			navbar.classList.add('navbar-hidden')
 		}
 	})
-	window.swup.hooks.on('content:replace', initCustomScrollbar)
+	window.swup.hooks.on('content:replace', () => {
+		initCustomScrollbar();
+		const GAME_STORAGE_KEY = 'fuwari-hide-games-preference';
+		if (localStorage.getItem(GAME_STORAGE_KEY) === 'true') {
+			document.documentElement.classList.add('hide-games');
+		} else {
+			document.documentElement.classList.remove('hide-games');
+		}
+	})
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
