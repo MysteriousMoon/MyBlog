@@ -1,0 +1,388 @@
+---
+---
+
+<div class="turkey-sim interactive-game-container" id="turkey-container">
+    <div class="header">
+        <div class="stats">
+            <span class="label">当前天数</span>
+            <span class="value" id="day-value">Day 1</span>
+        </div>
+        <div class="stats">
+            <span class="label">安全指数</span>
+            <span class="value safe" id="safety-value">100%</span>
+        </div>
+    </div>
+
+    <div class="chart-area">
+        <canvas id="turkeyChart"></canvas>
+    </div>
+
+    <div class="controls">
+        <p class="thought-bubble" id="turkey-thought">
+            “农场主对我真好，今天也按时送来了食物！”
+        </p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="turkey-progress"></div>
+        </div>
+    </div>
+
+    <div class="overlay" id="turkey-overlay">
+        <div class="result-card">
+            <div class="icon">🦃 🔪</div>
+            <h3>感恩节到了</h3>
+            <p>第 1001 天推翻了过去 1000 天的所有结论。</p>
+            <div class="lesson">
+                <strong>归纳法的陷阱：</strong><br>
+                历史数据的平稳，有时只是在为最终的毁灭做铺垫。
+            </div>
+            <button class="restart-btn" id="turkey-reset-btn">重新投胎</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .turkey-sim {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px; /* Reduced padding */
+        margin: 20px 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #334155;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s;
+        max-width: 100%;
+    }
+
+    .turkey-sim.dead {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .stats {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .label {
+        font-size: 0.7rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        font-feature-settings: "tnum";
+    }
+
+    .value.safe { color: #059669; }
+
+    .chart-area {
+        height: 140px; /* Reduced height */
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    .controls {
+        text-align: center;
+    }
+
+    .thought-bubble {
+        background: #f1f5f9;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: #475569;
+        margin-bottom: 12px;
+        position: relative;
+        font-style: italic;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 4px;
+        background: #e2e8f0;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #3b82f6;
+        transition: width 0.1s linear;
+    }
+
+    /* Overlay */
+    .overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(42, 159, 255, 0.55);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s;
+        z-index: 10;
+        text-align: center;
+    }
+
+    .overlay.visible { opacity: 1; pointer-events: auto; }
+
+    .result-card {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .icon { font-size: 2.5rem; margin-bottom: 8px; }
+    h3 { margin: 0 0 8px 0; font-size: 1.4rem; font-weight: 800; }
+    p { margin: 0 0 16px 0; font-size: 0.95rem; line-height: 1.4; opacity: 0.9; }
+
+    .lesson {
+        background: rgba(0,0,0,0.2);
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        font-size: 0.8rem;
+        text-align: left;
+    }
+
+    .restart-btn {
+        padding: 8px 20px;
+        background: white;
+        color: #dc2626;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+    .restart-btn:hover { transform: scale(1.05); }
+
+    /* Shake Animation */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-3px); }
+        75% { transform: translateX(3px); }
+    }
+    .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+</style>
+
+<script>
+    import Chart from 'chart.js/auto';
+
+    let days = 1;
+    let weight = 5; // Initial weight kg
+    let chartInstance: Chart | null = null;
+    let historyLabels: string[] = ['Day 1'];
+    let historyData: number[] = [5];
+    let isRunning = false;
+    let autoPlayTimer: any; // Timer ID
+    let resetCount = 0;
+
+    const DOOM_DAY = 1001;
+    const TOTAL_STEPS = 20; // Number of visual updates before doom
+
+    const thoughts = [
+        "农场主对我真好，今天也按时送来了食物！",
+        "看我多壮实，这就是科学喂养的结果。",
+        "听说有些火鸡担心未来？真是杞人忧天。",
+        "我的模型显示，明天被喂食的概率是 99.99%。",
+        "生活如此美好，感恩这一切！",
+        "人类是我们最好的朋友。",
+        "数据不会撒谎，我的生活正处于上升通道。",
+        "这就是所谓的“长期主义”吧。",
+        "只要努力长肉，就会有回报。",
+        "不用担心，农场主会保护我们的。"
+    ];
+
+    const easterEggThoughts = [
+        "看够没！😡",
+        "我都轮回好几次了，你是魔鬼吗？",
+        "结局反正都一样，别看了...",
+        "又是这一套，累不累啊？",
+        "快去干点正事吧，别盯着我了！"
+    ];
+
+    const els = {
+        container: document.getElementById('turkey-container'),
+        dayVal: document.getElementById('day-value'),
+        safeVal: document.getElementById('safety-value'),
+        thought: document.getElementById('turkey-thought'),
+        overlay: document.getElementById('turkey-overlay'),
+        resetBtn: document.getElementById('turkey-reset-btn'),
+        canvas: document.getElementById('turkeyChart') as HTMLCanvasElement,
+        progress: document.getElementById('turkey-progress')
+    };
+
+    function initChart() {
+        if (!els.canvas) return;
+
+        chartInstance = new Chart(els.canvas, {
+            type: 'line',
+            data: {
+                labels: historyLabels,
+                datasets: [{
+                    label: '体重 (kg)',
+                    data: historyData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0 // Hide points for cleaner look in auto mode
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false }, ticks: { display: false } },
+                    x: { grid: { display: false }, ticks: { display: false } }
+                },
+                animation: { duration: 0 } // Disable chart animation for smooth auto-updates
+            }
+        });
+    }
+
+    function runSimulation() {
+        if (isRunning) return;
+        isRunning = true;
+        let step = 0;
+
+        // Clear previous
+        if (autoPlayTimer) clearTimeout(autoPlayTimer);
+        
+        const loop = () => {
+            step++;
+            
+            // Simulation Logic: Fast forward days
+            const dayJump = Math.floor(DOOM_DAY / TOTAL_STEPS);
+            days += dayJump;
+            if (days > DOOM_DAY) days = DOOM_DAY;
+
+            weight += 0.5; // Linear growth
+
+            // Update Data
+            historyLabels.push(`Day ${days}`);
+            historyData.push(weight);
+            
+            // Visual Updates
+            if (chartInstance) chartInstance.update();
+            if (els.dayVal) els.dayVal.textContent = `Day ${days}`;
+            
+            let currentDelay = 150;
+
+            // Thought Update with Easter Egg
+            if (els.thought) {
+                if (resetCount > 1 && Math.random() > 0.9) {
+                    // 10% chance to show meta thought on subsequent replays
+                    els.thought.textContent = easterEggThoughts[Math.floor(Math.random() * easterEggThoughts.length)];
+                    els.thought.style.color = '#ef4444';
+                    els.thought.style.fontWeight = 'bold';
+                    currentDelay = 300; // Slow down!
+                } else {
+                    els.thought.textContent = thoughts[step % thoughts.length];
+                    els.thought.style.color = '';
+                    els.thought.style.fontWeight = '';
+                }
+            }
+
+            if (els.progress) els.progress.style.width = `${(step / TOTAL_STEPS) * 100}%`;
+
+            // Doom Check
+            if (days >= DOOM_DAY) {
+                // Trigger Doom
+                clearTimeout(autoPlayTimer);
+                setTimeout(triggerDoom, 300);
+            } else {
+                autoPlayTimer = setTimeout(loop, currentDelay);
+            }
+        };
+
+        loop();
+    }
+
+    function triggerDoom() {
+        if (chartInstance) {
+            historyLabels.push('Thanksgiving');
+            historyData.push(0); // Drop to 0
+            chartInstance.data.datasets[0].borderColor = '#475569'; // Slate 600
+            chartInstance.data.datasets[0].backgroundColor = 'rgba(71, 85, 105, 0.2)';
+            chartInstance.update();
+        }
+
+        if(els.container) {
+            els.container.classList.add('dead');
+            els.container.classList.add('shake'); // Use the safer shake animation
+        }
+        if(els.overlay) els.overlay.classList.add('visible');
+        isRunning = false;
+    }
+
+    function reset() {
+        if (autoPlayTimer) clearTimeout(autoPlayTimer);
+        isRunning = false;
+        resetCount++;
+        
+        days = 1;
+        weight = 5;
+        historyData = [5];
+        historyLabels = ['Day 1'];
+        
+        if(els.container) {
+            els.container.classList.remove('dead');
+            els.container.classList.remove('shake');
+        }
+        if(els.overlay) els.overlay.classList.remove('visible');
+        if(els.dayVal) els.dayVal.textContent = 'Day 1';
+        if(els.thought) els.thought.textContent = thoughts[0];
+        if(els.progress) els.progress.style.width = '0%';
+        
+        if (chartInstance) {
+            chartInstance.data.labels = historyLabels;
+            chartInstance.data.datasets[0].data = historyData;
+            chartInstance.data.datasets[0].borderColor = '#3b82f6';
+            chartInstance.data.datasets[0].backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            chartInstance.update();
+        }
+
+        // Restart after brief delay
+        setTimeout(runSimulation, 500);
+    }
+
+    // Auto Play Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !isRunning && days === 1) {
+                setTimeout(runSimulation, 500);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    // Init
+    initChart();
+    if (els.container) observer.observe(els.container);
+    if (els.resetBtn) els.resetBtn.addEventListener('click', reset);
+
+</script>

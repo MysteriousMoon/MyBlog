@@ -1,0 +1,316 @@
+---
+---
+<div class="distribution-container interactive-game-container">
+    <!-- 正态分布卡片 -->
+    <div class="card">
+        <h2>正态分布 (Normal Distribution)</h2>
+        <div class="chart-container">
+            <canvas id="normalChart"></canvas>
+        </div>
+        <div class="description normal-desc">
+            <strong>大盘涨跌幅概率 (正态分布假设):</strong>
+            <table class="probability-table">
+                <tr>
+                    <th>大盘涨跌幅</th>
+                    <th>理论发生概率</th>
+                </tr>
+                <tr>
+                    <td>±3%</td>
+                    <td>约 6.3%</td>
+                </tr>
+                <tr>
+                    <td>±5%</td>
+                    <td>约 0.02%</td>
+                </tr>
+                <tr>
+                    <td>±8%</td>
+                    <td>约 4.5×10⁻⁸ %</td>
+                </tr>
+                <tr>
+                    <td>±15%</td>
+                    <td>约 3.2×10⁻³⁷ % (几乎不可能)</td>
+                </tr>
+            </table>
+            <div class="note">
+                *正态分布模型低估尾部风险，极端波动的实际发生频率远高于理论预测。
+            </div>
+        </div>
+    </div>
+
+    <!-- 幂律分布卡片 -->
+    <div class="card">
+        <h2>t 分布 (Student's t, ν=4)</h2>
+        <div class="chart-container">
+            <canvas id="powerChart"></canvas>
+        </div>
+        <div class="description power-desc">
+            <strong>大盘涨跌幅概率 (t 分布模型):</strong>
+            <table class="probability-table">
+                <tr>
+                    <th>大盘涨跌幅</th>
+                    <th>实际发生概率</th>
+                </tr>
+                <tr class="highlight-row">
+                    <td>±3%</td>
+                    <td>约 10.5%</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>±5%</td>
+                    <td>约 2.8%</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>±8%</td>
+                    <td>约 0.5%</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>±15%</td>
+                    <td>约 0.03% (肥尾效应)</td>
+                </tr>
+            </table>
+            <div class="note warning">
+                *t 分布考虑肥尾效应，能更准确反映市场极端波动的实际概率。
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .distribution-container {
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #333;
+        margin: 20px 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #eee;
+    }
+    h2 { font-size: 1.1rem; text-align: center; margin: 0 0 15px 0; color: #222; font-weight: 700; }
+    .chart-container { position: relative; height: 250px; width: 100%; }
+    .description {
+        margin-top: 15px;
+        font-size: 0.85rem;
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 4px solid #ccc;
+    }
+    .description strong { display: block; margin-bottom: 8px; }
+    .normal-desc { border-left-color: #36a2eb; }
+    .power-desc { border-left-color: #ff6384; }
+    
+    .probability-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85em;
+    }
+    .probability-table th, .probability-table td {
+        border: 1px solid #e1e4e8;
+        padding: 6px 8px;
+        text-align: left;
+    }
+    .probability-table th { background-color: #f6f8fa; font-weight: 600; color: #444; }
+    .highlight-row { background-color: #fff0f0; color: #d63031; font-weight: 600; }
+    .note { margin-top: 10px; font-size: 0.8em; color: #666; line-height: 1.4; }
+    .note.warning { color: #d63031; }
+
+    @media (max-width: 768px) {
+        .distribution-container { grid-template-columns: 1fr; }
+    }
+</style>
+
+<script>
+    import Chart from 'chart.js/auto';
+
+    // X-axis range: -15% to +15% step 0.5 (fine granularity for market index)
+    const labels: number[] = [];
+    for(let i=-15; i<=15; i+=0.5) {
+        labels.push(i);
+    }
+
+    // --- 1. Normal Distribution (Model for Market Index) ---
+    // Sigma = 1.2% for market index (more stable than individual stocks)
+    const sigma = 1.2;
+    const normalData = labels.map(x => {
+        // PDF function
+        return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow(x / sigma, 2));
+    });
+
+    // --- 2. Student's t-Distribution (Fat Tail / Heavy Tail) ---
+    // Student's t-distribution is widely used in finance to model fat tails.
+    // PDF: f(x) = Γ((ν+1)/2) / (√(νπ) * Γ(ν/2)) * (1 + x²/ν)^(-(ν+1)/2)
+    // where ν is degrees of freedom
+    
+    // Gamma function approximation (Stirling's approximation for our use case)
+    function gamma(z: number): number {
+        // Using Lanczos approximation for better accuracy
+        const g = 7;
+        const C = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+                   771.32342877765313, -176.61502916214059, 12.507343278686905,
+                   -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+        
+        if (z < 0.5) {
+            return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+        }
+        
+        z -= 1;
+        let x = C[0];
+        for (let i = 1; i < g + 2; i++) {
+            x += C[i] / (z + i);
+        }
+        
+        const t = z + g + 0.5;
+        return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+    }
+    
+    // Student's t-distribution PDF
+    const nu = 4; // degrees of freedom - lower value = fatter tails (4-5 is common for market indices)
+    const scale = 2; // scale parameter to match market index volatility (~1-2% daily typical)
+    
+    const powerData = labels.map(x => {
+        const xScaled = x / scale;
+        const numerator = gamma((nu + 1) / 2);
+        const denominator = Math.sqrt(nu * Math.PI) * gamma(nu / 2);
+        const term = Math.pow(1 + (xScaled * xScaled) / nu, -(nu + 1) / 2);
+        return (numerator / denominator) * term / scale; // Divide by scale for proper normalization
+    });
+
+
+    interface PointMarker {
+        x: number;
+        y: number;
+        label: string;
+        color: string;
+        style?: string;
+    }
+
+    function createChart(id: string, label: string, data: number[], color: string, points: PointMarker[]) {
+        const ctx = document.getElementById(id) as HTMLCanvasElement | null;
+        if(!ctx) return;
+        
+        const datasets: any[] = [
+            {
+                label: label,
+                data: data,
+                borderColor: color,
+                backgroundColor: color + '33', // 20% opacity
+                borderWidth: 2,
+                fill: true,
+                pointRadius: 0,
+                tension: 0.3
+            }
+        ];
+
+        // Add marker points
+        points.forEach((p: PointMarker) => {
+            const pointData = labels.map(l => l === p.x ? p.y : null);
+            datasets.push({
+                label: p.label,
+                data: pointData,
+                pointStyle: p.style || 'circle',
+                pointRadius: 6,
+                backgroundColor: p.color,
+                borderColor: p.color,
+                showLine: false
+            });
+        });
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.map(x => (x>0?'+':'') + x + '%'),
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        display: true, 
+                        position: 'top', 
+                        labels: {boxWidth:10, font:{size:11}, filter: (item: any, chart: any) => item.text !== undefined } 
+                    },
+                    tooltip: { 
+                        enabled: true,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#333',
+                        bodyColor: '#666',
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                             title: (items: any) => {
+                                 return '涨跌幅: ' + items[0].label;
+                             },
+                             label: (context: any) => {
+                                 const label = context.dataset.label || '';
+                                 const val = context.parsed.y;
+                                 // Skip generating label for null values or purely decorative datasets if desired, 
+                                 // but usually we want to see the value.
+                                 if (val === null) return '';
+                                 // Convert to percentage format
+                                 const percentage = val * 100;
+                                 const valStr = (percentage < 0.01 && percentage > 0) ? '< 0.01%' : percentage.toFixed(2) + '%';
+                                 return `${label}: ${valStr}`;
+                             }
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        title: {display: true, text: '单日涨跌幅 (%)', padding: {top: 10}, font: {size: 11}}, 
+                        ticks: { maxTicksLimit: 9, maxRotation: 0, font: {size: 10}, color: '#888' },
+                        grid: { display: false }
+                    },
+                    y: { display: false, min: 0 }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            }
+        });
+    }
+
+    // Normal Chart Data Points
+    // For market index with sigma=1.2%, calculate points at 3%, 5%, 8%, 15%
+    const normalPoints = [
+        { x: 3, y: (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow(3 / sigma, 2)), label: '±3%', color: '#999' },
+        { x: 5, y: (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow(5 / sigma, 2)), label: '±5%', color: '#666' },
+        { x: 8, y: (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow(8 / sigma, 2)), label: '±8%', color: '#555' },
+        { x: 15, y: (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow(15 / sigma, 2)), label: '±15% (几乎不可能)', color: '#333' }
+    ];
+
+    // Power Chart Data Points (Student's t-distribution)
+    // Calculate y values using the t-distribution formula
+    function tDistPDF(x: number): number {
+        const xScaled = x / scale;
+        const numerator = gamma((nu + 1) / 2);
+        const denominator = Math.sqrt(nu * Math.PI) * gamma(nu / 2);
+        const term = Math.pow(1 + (xScaled * xScaled) / nu, -(nu + 1) / 2);
+        return (numerator / denominator) * term / scale;
+    }
+    
+    const y3 = tDistPDF(3);
+    const y5 = tDistPDF(5);
+    const y8 = tDistPDF(8);
+    const y15 = tDistPDF(15);
+
+    const powerPoints = [
+        { x: 3, y: y3, label: '±3%', color: '#ff6384' },
+        { x: 5, y: y5, label: '±5%', color: '#d63031', style: 'star' },
+        { x: 8, y: y8, label: '±8%', color: '#555', style: 'triangle' },
+        { x: 15, y: y15, label: '±15% (肥尾)', color: '#333', style: 'rectRot' }
+    ];
+
+    createChart('normalChart', '正态分布 (低估风险)', normalData, '#36a2eb', normalPoints);
+    createChart('powerChart', 't 分布 (肥尾效应)', powerData, '#ff6384', powerPoints);
+
+</script>

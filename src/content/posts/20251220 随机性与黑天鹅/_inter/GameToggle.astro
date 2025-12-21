@@ -1,0 +1,103 @@
+---
+---
+
+<div class="game-toggle-container">
+    <button id="toggle-games-btn" class="toggle-btn" type="button" aria-pressed="false">
+        <span class="icon">🎮</span>
+        <span class="text" id="toggle-btn-text">隐藏所有游戏</span>
+    </button>
+</div>
+
+
+
+<script>
+    const btn = document.getElementById('toggle-games-btn');
+    const btnText = document.getElementById('toggle-btn-text');
+    const STORAGE_KEY = 'fuwari-hide-games-preference';
+
+    function updateButtonState() {
+        if (!btn || !btnText) return;
+        
+        const isHidden = document.documentElement.classList.contains('hide-games');
+        if (isHidden) {
+            btnText.textContent = "显示所有游戏";
+            btn.classList.add('muted');
+            btn.setAttribute('aria-pressed', 'true');
+        } else {
+            btnText.textContent = "隐藏所有游戏";
+            btn.classList.remove('muted');
+            btn.setAttribute('aria-pressed', 'false');
+        }
+    }
+
+    // 初始化按钮状态
+    updateButtonState();
+
+    if (btn) {
+        btn.addEventListener('click', () => {
+            // 切换 html 标签上的 class
+            document.documentElement.classList.toggle('hide-games');
+            
+            // 保存状态
+            const isHidden = document.documentElement.classList.contains('hide-games');
+            localStorage.setItem(STORAGE_KEY, String(isHidden));
+            
+            updateButtonState();
+        });
+    }
+</script>
+
+<style is:global>
+    /* 全局样式：当 html 有 hide-games 类时，隐藏游戏容器 */
+    html.hide-games .interactive-game-container {
+        display: none !important;
+    }
+</style>
+
+<style>
+    .game-toggle-container {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 2rem;
+    }
+
+    .toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+        background-color: #e2e8f0;
+        color: #1e293b;
+        transform: translateY(-1px);
+    }
+
+    .toggle-btn:active {
+        transform: translateY(0);
+    }
+
+    .toggle-btn.muted {
+        background-color: #fff;
+        border-style: dashed;
+        opacity: 0.7;
+    }
+
+    .toggle-btn.muted:hover {
+        opacity: 1;
+        background-color: #f8fafc;
+    }
+
+    .icon {
+        font-size: 1.1em;
+    }
+</style>

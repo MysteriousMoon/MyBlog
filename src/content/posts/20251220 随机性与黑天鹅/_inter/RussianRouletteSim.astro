@@ -1,0 +1,551 @@
+---
+---
+
+<div class="roulette-dashboard interactive-game-container" id="dashboard">
+    <!-- Left Panel: Game Control -->
+    <div class="game-panel">
+        <div class="lives-badge" id="lives-display">
+            ❤️ <span id="lives-value">1 条命</span>
+        </div>
+
+        <div class="game-layout-row">
+            <div class="cylinder-visual" id="cylinder">
+                <!-- 5 Bullets, 1 Empty -->
+                <div class="chamber c1"><div class="bullet"></div></div>
+                <div class="chamber c2"><div class="bullet"></div></div>
+                <div class="chamber c3"><div class="bullet"></div></div>
+                <div class="chamber c4"><div class="bullet"></div></div>
+                <div class="chamber c5"><div class="bullet"></div></div>
+                <div class="chamber c6"></div> <!-- Empty -->
+                <div class="center-axis"></div>
+            </div>
+
+            <div class="controls">
+                <div class="money-display">
+                    <span class="label">当前奖金</span>
+                    <span class="value" id="money-value">$0</span>
+                </div>
+                
+                <button class="trigger-btn" id="trigger-btn">
+                    扣动扳机 (赢取 $100万)
+                </button>
+                
+                <div class="risk-badge" id="risk-badge">
+                    <span class="bad">☠️ 83.3% 死亡</span>
+                    <span class="separator">|</span>
+                    <span class="good">🎉 16.7% 存活</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel: Timeline Chart -->
+    <div class="chart-panel">
+        <canvas id="wealthChart"></canvas>
+    </div>
+
+    <!-- Outcome Overlay -->
+    <div class="overlay" id="overlay">
+        <div class="result-card" id="result-card">
+            <div class="icon" id="result-icon">💀</div>
+            <h3 id="result-title">你死了</h3>
+            <p id="result-desc">耗费了一条生命。</p>
+            <button class="restart-btn" id="revive-btn">复活并继续</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .roulette-dashboard {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        margin: 32px 0;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr; /* 40% - 60% split */
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        font-family: system-ui, -apple-system, sans-serif;
+        position: relative;
+    }
+
+    /* Left Panel */
+    .game-panel {
+        padding: 20px;
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        position: relative;
+    }
+
+    .game-layout-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        width: 100%;
+        margin-top: 10px; /* Space for the absolute badge */
+    }
+
+    .lives-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 0.8rem;
+        background: #fff;
+        padding: 4px 10px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+
+    .cylinder-visual {
+        width: 90px;
+        height: 90px;
+        background: #cbd5e1;
+        border-radius: 50%;
+        position: relative;
+        border: 4px solid #94a3b8;
+        transition: transform 0.1s ease-out;
+        flex-shrink: 0;
+    }
+
+    .cylinder-visual.spinning {
+        animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .chamber {
+        width: 24px;
+        height: 24px;
+        background: #64748b;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%; left: 50%;
+        margin-top: -12px; margin-left: -12px;
+        box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .bullet {
+        width: 14px;
+        height: 14px;
+        background: #f59e0b; /* Gold/Brass color */
+        border-radius: 50%;
+        box-shadow: inset -1px -1px 2px rgba(0,0,0,0.2), 0 0 2px rgba(245, 158, 11, 0.5);
+    }
+    
+    /* Radial positioning */
+    .c1 { transform: rotate(0deg) translate(28px) rotate(0deg); }
+    .c2 { transform: rotate(60deg) translate(28px) rotate(-60deg); }
+    .c3 { transform: rotate(120deg) translate(28px) rotate(-120deg); }
+    .c4 { transform: rotate(180deg) translate(28px) rotate(-180deg); }
+    .c5 { transform: rotate(240deg) translate(28px) rotate(-240deg); }
+    .c6 { transform: rotate(300deg) translate(28px) rotate(-300deg); }
+
+    .center-axis {
+        width: 14px; height: 14px;
+        background: #475569;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        border: 2px solid #94a3b8;
+    }
+
+    .controls {
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .money-display {
+        margin-bottom: 4px;
+    }
+
+    .label {
+        font-size: 0.7rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .value {
+        font-size: 1.4rem;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #059669;
+        font-feature-settings: "tnum";
+        display: block;
+    }
+
+    .trigger-btn {
+        width: 100%;
+        padding: 10px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        margin-top: 8px;
+    }
+
+    .trigger-btn:hover { background: #dc2626; transform: translateY(-1px); }
+    .trigger-btn:active { transform: translateY(1px); }
+    .trigger-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .risk-badge {
+        margin-top: 8px;
+        justify-content: flex-start;
+        font-size: 0.75rem;
+        color: #64748b;
+        display: flex;
+        gap: 8px;
+    }
+    
+    .bad { color: #ef4444; font-weight: 600; }
+    .good { color: #059669; font-weight: 600; }
+    .separator { color: #cbd5e1; }
+
+    /* Right Panel */
+    .chart-panel {
+        padding: 16px;
+        height: 200px; /* Reduced height */
+        background: #fff;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Overlay */
+    .overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 10;
+        backdrop-filter: blur(2px);
+    }
+
+    .overlay.visible { opacity: 1; pointer-events: auto; }
+
+    .result-card { text-align: center; padding: 20px; animation: slideUp 0.3s ease-out; }
+    
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .icon { font-size: 48px; margin-bottom: 12px; }
+    h3 { margin: 0 0 8px 0; color: #1e293b; font-size: 1.5rem; }
+    p { margin: 0 0 20px 0; color: #64748b; }
+
+    .restart-btn {
+        padding: 10px 24px;
+        background: #1e293b;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .restart-btn:hover { background: #0f172a; }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+        .roulette-dashboard { grid-template-columns: 1fr; }
+        .game-panel { border-right: none; border-bottom: 1px solid #e2e8f0; padding: 20px; }
+        .chart-panel { height: 200px; padding: 16px; }
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-3px); }
+        75% { transform: translateX(3px); }
+    }
+    .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+    /* Bullet Interactions */
+    .bullet { cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
+    
+    .bullet.trembling {
+        animation: bullet-shake 0.1s infinite;
+    }
+    
+    @keyframes bullet-shake {
+        0% { transform: translate(0, 0); }
+        25% { transform: translate(-1px, 1px); }
+        50% { transform: translate(1px, -1px); }
+        75% { transform: translate(-1px, -1px); }
+        100% { transform: translate(1px, 1px); }
+    }
+
+    .bullet.removed {
+        transform: translateY(50px) scale(0.5);
+        opacity: 0;
+        pointer-events: none;
+    }
+</style>
+
+<script>
+    import Chart from 'chart.js/auto';
+
+    let money = 0;
+    let round = 0;
+    let lives = 1;
+    let isSpinning = false;
+    let chartInstance: Chart | null = null;
+    let historyData = [{x: 0, y: 0}]; // Initial point
+    let loadedBullets = 5;
+
+    const els = {
+        value: document.getElementById('money-value'),
+        lives: document.getElementById('lives-value'),
+        cylinder: document.getElementById('cylinder'),
+        btn: document.getElementById('trigger-btn') as HTMLButtonElement,
+        overlay: document.getElementById('overlay'),
+        icon: document.getElementById('result-icon'),
+        title: document.getElementById('result-title'),
+        desc: document.getElementById('result-desc'),
+        revive: document.getElementById('revive-btn'),
+        dashboard: document.getElementById('dashboard'),
+        chartCanvas: document.getElementById('wealthChart') as HTMLCanvasElement,
+        riskBadge: document.getElementById('risk-badge'),
+        bullets: document.querySelectorAll('.bullet')
+    };
+
+    function initChart() {
+        if (!els.chartCanvas) return;
+        
+        chartInstance = new Chart(els.chartCanvas, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: '你的累计财富',
+                    data: historyData,
+                    borderColor: '#059669',
+                    backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        title: { display: true, text: '轮次' },
+                        min: 0,
+                        max: 10,
+                        grid: { display: false }
+                    },
+                    y: {
+                        title: { display: true, text: '金额 ($)' },
+                        min: 0,
+                        suggestedMax: 2000000,
+                        ticks: {
+                            callback: (val) => {
+                                const v = val as number;
+                                return v >= 1000000 ? (v/1000000) + 'M' : v;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                         callbacks: {
+                            label: (ctx) => {
+                                if (ctx.parsed && typeof ctx.parsed.y === 'number') {
+                                    return '$' + ctx.parsed.y.toLocaleString();
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 500
+                }
+            }
+        });
+    }
+
+    function updateChart(newRound: number, newMoney: number) {
+        historyData.push({x: newRound, y: newMoney});
+        
+        if (chartInstance) {
+            // Auto expand x-axis if needed
+            if (newRound > (chartInstance.options.scales?.x?.max as number)) {
+                if (chartInstance.options.scales?.x) {
+                     chartInstance.options.scales.x.max = newRound + 2;
+                }
+            }
+
+            // "Greed" Logic: Y-axis always shows room for "one more win" (+1M) plus a little buffer
+            if (chartInstance.options.scales?.y) {
+                 chartInstance.options.scales.y.suggestedMax = newMoney + 1500000;
+            }
+
+            chartInstance.update();
+        }
+    }
+
+    function updateStats() {
+        if(els.value) els.value.textContent = '$' + money.toLocaleString();
+        if(els.lives) els.lives.textContent = `${lives} 条命`;
+    }
+
+    function trigger(isRigged = false) {
+        if(isSpinning) return;
+        isSpinning = true;
+        
+        if(els.btn) {
+            els.btn.textContent = '🤞 命运转动中...';
+            els.btn.disabled = true;
+        }
+        if(els.cylinder) els.cylinder.classList.add('spinning');
+
+        // Delay: 1.5s for manual, 1s for rigged
+        const delay = isRigged ? 1000 : 1300 + Math.random() * 500;
+
+        setTimeout(() => {
+            isSpinning = false;
+            if(els.cylinder) els.cylinder.classList.remove('spinning');
+            
+            // Logic: 
+            // Probability = Loaded Bullets / 6
+            const probDeath = loadedBullets / 6;
+            const isDeath = !isRigged && Math.random() < probDeath;
+            
+            round++;
+
+            if (!isDeath) {
+                // SURVIVE
+                money += 1000000;
+                updateStats();
+                updateChart(round, money);
+                
+                if(els.btn) {
+                    els.btn.textContent = '扣动扳机';
+                    els.btn.disabled = false;
+                }
+            } else {
+                // DIE
+                handleDeath();
+            }
+        }, delay);
+    }
+
+    function handleDeath() {
+        // Increment lives, but KEEP money
+        lives++;
+        updateStats();
+        // Chart creates a flat line for this round (or could imply a loss, but requirement says money stays)
+        updateChart(round, money);
+
+        if(els.dashboard) {
+            const db = els.dashboard;
+            db.classList.add('shake');
+            setTimeout(() => db.classList.remove('shake'), 500);
+        }
+
+        if(els.icon) els.icon.textContent = '💀';
+        if(els.title) els.title.textContent = '你死了';
+        if(els.desc) els.desc.textContent = `你失去了一条生命。\n当前战绩：耗费 ${lives} 条命，赚取 $${money.toLocaleString()}。`;
+        if(els.overlay) els.overlay.classList.add('visible');
+    }
+
+    function revive() {
+        if(els.overlay) els.overlay.classList.remove('visible');
+        if(els.btn) {
+            els.btn.textContent = '扣动扳机 (赢取 $100万)';
+            els.btn.disabled = false;
+        }
+    }
+
+    // Auto Trigger Logic
+    let hasAutoTriggered = false;
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !hasAutoTriggered) {
+                hasAutoTriggered = true;
+                // Wait a moment for user to see the initial state
+                setTimeout(() => {
+                    trigger(true); // RIGGED WIN
+                }, 500);
+            }
+        });
+    }, { threshold: 0.6 });
+
+    if(els.dashboard) {
+        observer.observe(els.dashboard);
+    }
+
+    // Bullet Interaction Logic
+    const bulletClicks = new Map(); // visual element -> click count
+
+    els.bullets.forEach(bullet => {
+        bulletClicks.set(bullet, 0);
+        bullet.addEventListener('click', (e) => {
+            if (isSpinning) return;
+            const el = e.currentTarget as HTMLElement;
+            const count = bulletClicks.get(el) || 0;
+
+            if (count === 0) {
+                // First click: Tremble
+                el.classList.add('trembling');
+                bulletClicks.set(el, 1);
+            } else if (count === 1) {
+                // Second click: Remove
+                el.classList.remove('trembling');
+                el.classList.add('removed');
+                bulletClicks.set(el, 2);
+                
+                // Update Logic
+                loadedBullets--;
+                updateRiskBadge();
+            }
+        });
+    });
+
+    function updateRiskBadge() {
+        if (!els.riskBadge) return;
+        const deathProb = (loadedBullets / 6) * 100;
+        const surviveProb = 100 - deathProb;
+        
+        els.riskBadge.innerHTML = `
+            <span class="bad">☠️ ${deathProb.toFixed(1)}% 死亡</span>
+            <span class="separator">|</span>
+            <span class="good">🎉 ${surviveProb.toFixed(1)}% 存活</span>
+        `;
+    }
+
+    // Manual Event Listeners
+    if(els.btn) els.btn.addEventListener('click', () => trigger(false)); // Normal risk
+    if(els.revive) els.revive.addEventListener('click', revive);
+
+    // Init Chart
+    initChart();
+</script>

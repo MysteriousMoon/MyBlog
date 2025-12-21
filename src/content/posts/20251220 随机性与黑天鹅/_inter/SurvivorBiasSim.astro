@@ -1,0 +1,303 @@
+---
+---
+
+<div class="scam-sim interactive-game-container" id="scam-sim-container">
+    <div class="sim-header-compact">
+        <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span id="round-text">准备开始...</span>
+        </div>
+        <button class="replay-btn" id="replay-btn" title="重新演示">
+            🔄
+        </button>
+    </div>
+
+    <div class="sim-visual">
+        <div class="population-bar-container">
+            <div class="population-bar" id="pop-bar"></div>
+            <span class="pop-label" id="pop-label">10,000 人</span>
+        </div>
+    </div>
+    
+    <div class="sim-stats">
+        <div class="stat-item">
+            <span class="stat-label">幸存</span>
+            <span class="stat-value" id="survivor-count">10,000</span>
+        </div>
+        <div class="stat-item border-left">
+            <span class="stat-label">概率</span>
+            <span class="stat-value" id="prob-value">100%</span>
+        </div>
+        <div class="stat-item mindset-item">
+            <span class="mindset-text" id="mindset-text">即将收到第一封邮件...</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .scam-sim {
+        background: #fafafa;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin: 20px 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #374151;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .sim-header-compact {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #6b7280;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #10b981;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    .replay-btn {
+        background: transparent;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #6b7280;
+        transition: all 0.2s;
+        padding: 0;
+        font-size: 0.9rem;
+    }
+
+    .replay-btn:hover {
+        background-color: #f3f4f6;
+        color: #374151;
+        border-color: #d1d5db;
+    }
+
+    .sim-visual {
+        margin-bottom: 16px;
+    }
+
+    .population-bar-container {
+        width: 100%;
+        height: 24px;
+        background: #f3f4f6;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .population-bar {
+        height: 100%;
+        width: 100%;
+        background-color: #3b82f6; 
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pop-label {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #374151;
+        mix-blend-mode: overlay; /* To be visible on both blue and gray */
+        pointer-events: none;
+    }
+    
+    /* Fallback for mix-blend-mode visibility issues */
+    .population-bar + .pop-label {
+        color: #374151; /* Dark text for contrast against light gray background */
+        z-index: 1;
+    }
+
+    .sim-stats {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        gap: 16px;
+        align-items: center;
+        border-top: 1px solid #f3f4f6;
+        padding-top: 12px;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .border-left {
+        border-left: 1px solid #f3f4f6;
+        padding-left: 16px;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .stat-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        font-family: 'SF Mono', Menlo, monospace;
+        color: #111827;
+    }
+
+    .mindset-item {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding-left: 8px;
+        border-left: 1px solid #f3f4f6;
+    }
+
+    .mindset-text {
+        font-size: 0.85rem;
+        color: #4b5563;
+        font-style: italic;
+        text-align: right;
+    }
+
+    @media (max-width: 500px) {
+        .sim-stats {
+            grid-template-columns: 1fr 1fr;
+        }
+        .mindset-item {
+            grid-column: 1 / -1;
+            border-left: none;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 8px;
+            padding-left: 0;
+            justify-content: center;
+        }
+        .mindset-text { text-align: center; }
+    }
+</style>
+
+<script>
+    const INITIAL = 10000;
+    const ROUNDS = 6;
+    const DELAY_MS = 900; // Delay between each round
+
+    const mindsets = [
+        "即将收到第一封邮件...",
+        "🤔 咦，这人谁啊？说得还挺准的",
+        "😮 又准了？有点意思...",
+        "😲 连续三次全对？这不可能是蒙的吧！",
+        "🤩 这绝对是内幕消息！我要关注他！",
+        "🙏 大师！请收我为徒！",
+        "🤑 梭哈！把我的全部积蓄都投进去！"
+    ];
+
+    let isRunning = false;
+    let replayCount = 0;
+
+    const popBar = document.getElementById('pop-bar');
+    const popLabel = document.getElementById('pop-label');
+    const roundText = document.getElementById('round-text');
+    const survivorCount = document.getElementById('survivor-count');
+    const probValue = document.getElementById('prob-value');
+    const mindsetText = document.getElementById('mindset-text');
+    const replayBtn = document.getElementById('replay-btn') as HTMLButtonElement;
+    const container = document.getElementById('scam-sim-container');
+
+    function updateUI(round: number, survivors: number) {
+        const percentage = (survivors / INITIAL) * 100;
+        const prob = Math.pow(0.5, round) * 100;
+
+        if (popBar) popBar.style.width = percentage + '%';
+        if (popLabel) popLabel.textContent = survivors.toLocaleString() + ' 人';
+        if (survivorCount) survivorCount.textContent = survivors.toLocaleString();
+        if (probValue) probValue.textContent = prob.toFixed(2) + '%';
+        if (roundText) {
+            roundText.textContent = round === 0 
+                ? '准备开始...' 
+                : `第 ${round} 轮预测完成`;
+        }
+        
+        if (mindsetText) {
+            // Special Logic for final round on replay
+            if (round === ROUNDS && replayCount >= 1) {
+                mindsetText.textContent = "🤔 我好像见过这个大师...";
+                mindsetText.style.color = '#ef4444'; // Highlight distinct realization
+            } else {
+                mindsetText.textContent = mindsets[round] || mindsets[0];
+                mindsetText.style.color = ''; // Reset color
+            }
+        }
+    }
+
+    async function runSimulation() {
+        if (isRunning) return;
+        isRunning = true;
+        if (replayBtn) replayBtn.disabled = true;
+
+        let survivors = INITIAL;
+        updateUI(0, survivors);
+
+        for (let round = 1; round <= ROUNDS; round++) {
+            await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+            survivors = Math.floor(survivors / 2);
+            updateUI(round, survivors);
+        }
+
+        isRunning = false;
+        replayCount++; // Increment replay count after run finishes
+        if (replayBtn) replayBtn.disabled = false;
+    }
+
+    // Intersection Observer: auto-trigger when visible
+    let hasTriggered = false;
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !hasTriggered && !isRunning) {
+                hasTriggered = true;
+                runSimulation();
+            }
+        });
+    }, { threshold: 0.5 });
+
+    if (container) {
+        observer.observe(container);
+    }
+
+    // Replay button
+    if (replayBtn) {
+        replayBtn.addEventListener('click', () => {
+            runSimulation();
+        });
+    }
+
+    // Initialize UI
+    updateUI(0, INITIAL);
+</script>
