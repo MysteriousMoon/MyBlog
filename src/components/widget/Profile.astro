@@ -1,11 +1,20 @@
 ---
+import { getEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 import { profileConfig } from "../../config";
 import { url } from "../../utils/url-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 
 const config = profileConfig;
-const bioArray = Array.isArray(config.bio) ? config.bio : [config.bio];
+const bioEntry = await getEntry("spec", "bio");
+const bioArray = bioEntry
+	? bioEntry.body
+			.split("\n")
+			.map((l) => l.trim())
+			.filter((l) => l.length > 0)
+	: Array.isArray(config.bio)
+		? config.bio
+		: [config.bio];
 ---
 <div class="card-base p-3">
     <a aria-label="Go to About Page" href={url('/about/')}
