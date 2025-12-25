@@ -1,7 +1,7 @@
 ---
 title: 骑行20250921 圣劳伦斯市场
 published: 2025-09-21
-slug: riding-hc3
+slug: riding-hc4
 description: "圣劳伦斯市场骑行往返"
 image: "./cover.webp"
 tags: ["出行"]

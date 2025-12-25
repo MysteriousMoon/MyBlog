@@ -1,7 +1,7 @@
 ---
 title: 骑行20250917 安大略湖周边
 published: 2025-09-17
-slug: riding-hc2
+slug: riding-hc3
 description: "安大略湖三角环线"
 image: "./cover.webp"
 tags: ["出行"]

@@ -1,0 +1,72 @@
+---
+import { getEntry } from "astro:content";
+import BookTable from "@components/BookTable.svelte";
+import Markdown from "@components/misc/Markdown.astro";
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { parseMarkdownTable } from "../utils/table-utils";
+
+const booksPost = await getEntry("spec", "books");
+
+if (!booksPost) {
+	throw new Error("Books page content not found");
+}
+
+const rawContent = booksPost.body;
+
+// 1. Extract Table (assumes standard md table syntax)
+// Matches | ... | \n | --- | ... up to double newline or end
+const tableRegex = /(\|.*\|\n\|[-:| ]+\|\n(?:\|.*\|\n?)*)/;
+const match = rawContent.match(tableRegex);
+
+interface TableData {
+	headers: string[];
+	rows: { [key: string]: string }[];
+}
+
+let tableData: TableData = { headers: [], rows: [] };
+let contentBeforeTable = rawContent;
+let contentAfterTable = "";
+
+if (match) {
+	const tableMarkdown = match[0];
+	tableData = parseMarkdownTable(tableMarkdown);
+
+	// Split content around the table
+	const parts = rawContent.split(tableMarkdown);
+	contentBeforeTable = parts[0] || "";
+	contentAfterTable = parts.slice(1).join("") || ""; // Join in case multiple splits
+}
+---
+
+<MainGridLayout title={i18n(I18nKey.books)} description={i18n(I18nKey.books)}>
+    <div class="flex w-full rounded-[var(--radius-large)] relative min-h-[50vh]">
+        <div class="card-base z-10 px-9 py-6 relative w-full">
+            
+            <!-- Content Before Table -->
+            {contentBeforeTable.trim() && (
+                <Markdown class="mt-2 mb-6">
+                    {contentBeforeTable}
+                </Markdown>
+            )}
+
+            <!-- Interactive Table -->
+            {tableData.rows.length > 0 && (
+                <BookTable 
+                    client:load 
+                    headers={tableData.headers} 
+                    rows={tableData.rows} 
+                />
+            )}
+
+            <!-- Content After Table -->
+            {contentAfterTable.trim() && (
+                <Markdown class="mt-6">
+                    {contentAfterTable}
+                </Markdown>
+            )}
+            
+        </div>
+    </div>
+</MainGridLayout>
