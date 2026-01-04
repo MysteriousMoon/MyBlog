@@ -139,13 +139,13 @@ function renderCell(content: string) {
 }
 </script>
 
-<div class="w-full">
+<div class="w-full text-black/75 dark:text-white/75">
     <!-- Filters Row -->
     <div class="flex flex-wrap gap-4 mb-4">
         {#each headers as header}
             {#if !NO_FILTER_COLUMNS.includes(header) && filterOptions[header]?.length > 0}
                 <div class="relative group">
-                    <button class="px-3 py-1.5 rounded-lg text-sm font-medium bg-[var(--card-bg)] border border-[var(--line-color)] hover:border-[var(--primary)] transition flex items-center gap-2">
+                    <button class="px-3 py-1.5 rounded-lg text-sm font-medium bg-[var(--card-bg)] border border-[var(--line-color)] hover:border-[var(--primary)] transition flex items-center gap-2 text-black/75 dark:text-white/75">
                         <span>{header}</span>
                         {#if activeFilters[header]?.length}
                             <span class="bg-[var(--primary)] text-white text-xs px-1.5 rounded-full">{activeFilters[header].length}</span>
@@ -155,7 +155,7 @@ function renderCell(content: string) {
                     </button>
                     
                     <!-- Dropdown -->
-                    <div class="absolute top-full left-0 mt-2 w-48 bg-[var(--card-bg)] border border-[var(--line-color)] rounded-xl shadow-xl z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-2">
+                    <div class="absolute top-full left-0 mt-2 w-48 bg-[var(--card-bg)] border border-[var(--line-color)] rounded-xl shadow-xl z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-2 text-black/75 dark:text-white/75">
                         {#if activeFilters[header]?.length}
                             <button class="w-full text-left px-2 py-1 text-xs text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] rounded mb-1" on:click={() => clearFilter(header)}>
                                 清除筛选
@@ -183,7 +183,7 @@ function renderCell(content: string) {
             <thead>
                 <tr class="border-b border-[var(--line-color)]">
                     {#each headers as header}
-                        <th class="py-2 px-2 font-bold text-sm select-none cursor-pointer hover:text-[var(--primary)] transition whitespace-nowrap" on:click={() => toggleSort(header)}>
+                        <th class="py-2 px-2 font-bold text-sm select-none cursor-pointer hover:text-[var(--primary)] transition whitespace-nowrap text-black/90 dark:text-white/90" on:click={() => toggleSort(header)}>
                             <div class="flex items-center gap-1">
                                 {header}
                                 <div class="flex flex-col text-[10px] leading-none opacity-50">
@@ -210,7 +210,7 @@ function renderCell(content: string) {
         </table>
 
         {#if filteredRows.length === 0}
-            <div class="text-center py-8 text-sm opacity-50">
+            <div class="text-center py-8 text-sm opacity-50 text-black/50 dark:text-white/50">
                 没有找到匹配的书籍
             </div>
         {/if}

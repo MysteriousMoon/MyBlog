@@ -3,13 +3,22 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
+import { siteConfig } from "src/config";
+
 // Get the effective slug for a post (custom slug from frontmatter or default from file path)
 export function getPostSlug(post: CollectionEntry<"posts">): string {
 	return post.data.slug || post.slug;
 }
 
-// // Retrieve posts and sort them by publication date
-async function getRawSortedPosts() {
+// Check if a post is a translation (has alternateSlug and is not the site's default language)
+function isTranslation(post: CollectionEntry<"posts">): boolean {
+	if (!post.data.alternateSlug) return false;
+	const postLang = post.data.lang || siteConfig.lang;
+	return postLang !== siteConfig.lang;
+}
+
+// Retrieve ALL posts (including translations) and sort by publication date - used for page generation
+async function getRawAllPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
@@ -22,7 +31,31 @@ async function getRawSortedPosts() {
 	return sorted;
 }
 
+// Retrieve posts excluding translations - used for listing (homepage, archive, etc.)
+async function getRawSortedPosts() {
+	const allPosts = await getRawAllPosts();
+	// Filter out translations (posts with alternateSlug that are not in the site's default language)
+	return allPosts.filter((post) => !isTranslation(post));
+}
+
+// Get ALL sorted posts with prev/next links - used for static page generation
 export async function getSortedPosts() {
+	const sorted = await getRawAllPosts();
+
+	for (let i = 1; i < sorted.length; i++) {
+		sorted[i].data.nextSlug = getPostSlug(sorted[i - 1]);
+		sorted[i].data.nextTitle = sorted[i - 1].data.title;
+	}
+	for (let i = 0; i < sorted.length - 1; i++) {
+		sorted[i].data.prevSlug = getPostSlug(sorted[i + 1]);
+		sorted[i].data.prevTitle = sorted[i + 1].data.title;
+	}
+
+	return sorted;
+}
+
+// Get sorted posts excluding translations - used for homepage and listing pages
+export async function getSortedPostsForList() {
 	const sorted = await getRawSortedPosts();
 
 	for (let i = 1; i < sorted.length; i++) {
@@ -61,8 +94,11 @@ export async function getTagList(): Promise<Tag[]> {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
 
+	// Filter out translations
+	const filteredPosts = allBlogPosts.filter((post) => !isTranslation(post));
+
 	const countMap: { [key: string]: number } = {};
-	allBlogPosts.forEach((post: { data: { tags: string[] } }) => {
+	filteredPosts.forEach((post: { data: { tags: string[] } }) => {
 		post.data.tags.forEach((tag: string) => {
 			if (!countMap[tag]) countMap[tag] = 0;
 			countMap[tag]++;
@@ -87,8 +123,12 @@ export async function getCategoryList(): Promise<Category[]> {
 	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
+
+	// Filter out translations
+	const filteredPosts = allBlogPosts.filter((post) => !isTranslation(post));
+
 	const count: { [key: string]: number } = {};
-	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
+	filteredPosts.forEach((post: { data: { category: string | null } }) => {
 		if (!post.data.category) {
 			const ucKey = i18n(I18nKey.uncategorized);
 			count[ucKey] = count[ucKey] ? count[ucKey] + 1 : 1;

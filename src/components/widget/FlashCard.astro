@@ -1,0 +1,245 @@
+---
+interface Props {
+	question: string;
+	answer: string;
+	hint?: string;
+}
+
+const { question, answer, hint } = Astro.props;
+const cardId = `flashcard-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<div class="flashcard-wrapper" data-card-id={cardId}>
+  <div class="flashcard" id={cardId} tabindex="0" role="button" aria-pressed="false">
+    <div class="flashcard-inner">
+      <!-- Front (Question) -->
+      <div class="flashcard-front">
+        <div class="flashcard-content">
+          <div class="flashcard-icon">❓</div>
+          <div class="flashcard-question">{question}</div>
+          {hint && <div class="flashcard-hint">💡 提示：{hint}</div>}
+        </div>
+        <div class="flashcard-action">
+          <span class="tap-hint">👆 点击查看答案</span>
+        </div>
+      </div>
+      
+      <!-- Back (Answer) -->
+      <div class="flashcard-back">
+        <div class="flashcard-content">
+          <div class="flashcard-icon">✅</div>
+          <div class="flashcard-answer">{answer}</div>
+        </div>
+        <div class="flashcard-action">
+          <span class="tap-hint">👆 点击返回问题</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="flashcard-status">
+    <span class="status-badge" id={`${cardId}-status`}>未翻转</span>
+  </div>
+</div>
+
+<style>
+  .flashcard-wrapper {
+    margin: 1.5rem 0;
+    perspective: 1000px;
+  }
+
+  .flashcard {
+    position: relative;
+    width: 100%;
+    min-height: 180px;
+    cursor: pointer;
+    outline: none;
+    border-radius: 12px;
+  }
+
+  .flashcard:focus-visible {
+    box-shadow: 0 0 0 3px var(--primary, #3b82f6);
+  }
+
+  .flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  .flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+  }
+
+  .flashcard-front,
+  .flashcard-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 180px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .flashcard-front {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+  }
+
+  .flashcard-back {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    transform: rotateY(180deg);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  }
+
+  .flashcard-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .flashcard-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .flashcard-question,
+  .flashcard-answer {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  .flashcard-hint {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+  }
+
+  .flashcard-action {
+    text-align: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .tap-hint {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+
+  .flashcard-status {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+  }
+
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #64748b;
+    transition: all 0.3s ease;
+  }
+
+  .status-badge.viewed {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  /* Dark mode support */
+  :global(.dark) .flashcard-front {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  }
+
+  :global(.dark) .flashcard-back {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  }
+
+  :global(.dark) .status-badge {
+    background: #334155;
+    color: #94a3b8;
+  }
+
+  :global(.dark) .status-badge.viewed {
+    background: #166534;
+    color: #86efac;
+  }
+
+  /* Hover effect */
+  .flashcard:hover .flashcard-inner {
+    transform: scale(1.01);
+  }
+
+  .flashcard.flipped:hover .flashcard-inner {
+    transform: rotateY(180deg) scale(1.01);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .flashcard-front,
+    .flashcard-back {
+      padding: 1rem;
+      min-height: 160px;
+    }
+
+    .flashcard-inner {
+      min-height: 160px;
+    }
+
+    .flashcard-question,
+    .flashcard-answer {
+      font-size: 1rem;
+    }
+
+    .flashcard-icon {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<script define:vars={{ cardId }}>
+  const card = document.getElementById(cardId);
+  const statusBadge = document.getElementById(`${cardId}-status`);
+
+  if (card) {
+    const toggleCard = () => {
+      card.classList.toggle('flipped');
+      const isFlipped = card.classList.contains('flipped');
+      card.setAttribute('aria-pressed', String(isFlipped));
+      
+      if (isFlipped && statusBadge) {
+        statusBadge.textContent = '已查看';
+        statusBadge.classList.add('viewed');
+      }
+    };
+
+    card.addEventListener('click', toggleCard);
+    
+    // Keyboard support
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleCard();
+      }
+    });
+  }
+</script>

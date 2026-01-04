@@ -117,5 +117,222 @@
         overflow-x: auto;
         margin: 1em 0;
     }
+
+    /* FlashCard Component Styles */
+    .flashcard-wrapper {
+        margin: 1.5rem 0;
+        perspective: 1000px;
+    }
+
+    .flashcard {
+        position: relative;
+        width: 100%;
+        cursor: pointer;
+        outline: none;
+        background: transparent;
+        /* Prevent tap highlight on mobile */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Grid layout to allow auto-height based on tallest content */
+    .flashcard-inner {
+        position: relative;
+        width: 100%;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-style: preserve-3d;
+        display: grid;
+        grid-template-areas: "card";
+    }
+
+    .flashcard.flipped .flashcard-inner {
+        transform: rotateY(180deg);
+    }
+
+    .flashcard-front,
+    .flashcard-back {
+        grid-area: card; /* Stack them on top of each other */
+        width: 100%;
+        min-height: 200px; /* Min-height as requested */
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: var(--radius-large);
+        padding: 2rem 1.5rem; /* More vertical padding */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Center content vertically */
+        align-items: center;
+        
+        /* Fuwari Theme Styles */
+        background: var(--card-bg);
+        border: 1px solid var(--line-divider);
+        box-shadow: var(--box-shadow);
+        position: relative; /* For absolute positioning of hint */
+    }
+
+    .flashcard-back {
+        transform: rotateY(180deg);
+        background: var(--float-panel-bg); /* Slightly different bg for back */
+        border-color: var(--primary); /* Highlight border for answer side */
+    }
+
+    /* Highlight border on hover/focus */
+    .flashcard:hover .flashcard-front,
+    .flashcard:hover .flashcard-back,
+    .flashcard:focus-visible .flashcard-front {
+        border-color: var(--primary);
+    }
+
+    .flashcard-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .flashcard-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
+    }
+
+    .flashcard-question,
+    .flashcard-answer {
+        font-size: 1.15rem;
+        line-height: 1.75;
+        font-weight: 500;
+        color: var(--text-main); /* Use theme text color */
+        max-width: 90%;
+    }
+
+    .flashcard-question p,
+    .flashcard-answer p {
+        margin: 0;
+        color: inherit;
+    }
+    
+    .flashcard-answer {
+        color: var(--text-main);
+        text-align: left;
+    }
+
+    .flashcard-hint {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+        padding: 0.35rem 0.75rem;
+        background: var(--btn-plain-bg-hover);
+        border-radius: 8px;
+        border: 1px dashed var(--line-divider);
+    }
+
+    /* Redesigned minimal action hint in corner */
+    .flashcard-action {
+        position: absolute;
+        bottom: 0.75rem;
+        right: 1rem;
+        opacity: 0.4;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+    
+    .flashcard:hover .flashcard-action {
+        opacity: 0.8;
+    }
+
+    .tap-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .tap-hint::after {
+        content: '↵'; /* Enter symbol or similar */
+        font-size: 0.9em;
+    }
+
+    /* Deck / Stack Styles */
+    .flashcard-deck {
+        position: relative;
+        margin: 1.5rem 0;
+        background: var(--card-bg);
+        border: 1px solid var(--line-divider);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+    }
+
+    .flashcard-deck .flashcard-wrapper {
+        margin: 0; /* Remove margin when inside deck */
+        display: none; /* Hide all cards by default */
+    }
+    
+    .flashcard-deck .flashcard-wrapper .flashcard-front,
+    .flashcard-deck .flashcard-wrapper .flashcard-back {
+        border: none; /* Remove individual borders inside deck */
+        box-shadow: none; /* Remove individual shadows inside deck */
+        background: transparent; /* Use deck background */
+    }
+
+    .flashcard-deck .flashcard-wrapper.active {
+        display: block;
+    }
+
+    .flashcard-deck-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        background: var(--btn-plain-bg-hover);
+        border-top: 1px dashed var(--line-divider);
+    }
+
+    .deck-btn {
+        background: var(--btn-regular-bg);
+        color: var(--btn-content);
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+        user-select: none;
+    }
+
+    .deck-btn:hover:not(:disabled) {
+        background: var(--btn-regular-bg-hover);
+        transform: translateY(-1px);
+    }
+
+    .deck-btn:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .deck-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: transparent;
+        color: var(--text-muted);
+    }
+
+    .deck-counter {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        font-family: var(--font-mono);
+    }
+
+    /* Deck / Stack Styles */
+
+    /* Fix visual bugs in dark mode or deep nesting */
+    .flashcard-front, .flashcard-back {
+        transform-style: preserve-3d; /* Fix rendering issues in Safari */
+    }
     
 }
+

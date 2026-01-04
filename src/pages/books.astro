@@ -7,7 +7,7 @@ import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { parseMarkdownTable } from "../utils/table-utils";
 
-const booksPost = await getEntry("spec", "books");
+const booksPost = await getEntry("spec", "reading-list");
 
 if (!booksPost) {
 	throw new Error("Books page content not found");

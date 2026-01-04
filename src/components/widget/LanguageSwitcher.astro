@@ -1,0 +1,71 @@
+---
+/**
+ * Language Switcher Component
+ * Displays a language toggle button when an alternate language version is available
+ */
+import { getPostUrlBySlug } from "@utils/url-utils";
+
+interface Props {
+	lang?: string;
+	alternateSlug?: string;
+	class?: string;
+}
+
+const { lang, alternateSlug, class: className } = Astro.props;
+
+// Determine display labels for languages
+const langLabels: Record<string, string> = {
+	zh_CN: "中文",
+	zh_TW: "中文",
+	en: "English",
+	ja: "日本語",
+	ko: "한국어",
+};
+
+// Get the alternate language label
+function getAlternateLangLabel(
+	currentLang: string | undefined,
+	altSlug: string,
+): string {
+	// Try to detect language from slug suffix
+	if (altSlug.endsWith("_en") || altSlug.includes("/index_en")) {
+		return "English";
+	}
+	if (altSlug.endsWith("_cn") || altSlug.includes("/index_cn")) {
+		return "中文";
+	}
+	// Default based on current language
+	if (currentLang?.startsWith("zh")) {
+		return "English";
+	}
+	return "中文";
+}
+
+const alternateLangLabel = alternateSlug
+	? getAlternateLangLabel(lang, alternateSlug)
+	: "";
+const alternateUrl = alternateSlug ? getPostUrlBySlug(alternateSlug) : "";
+---
+
+{alternateSlug && (
+    <a 
+        href={alternateUrl}
+        class:list={[
+            "language-switcher",
+            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg",
+            "text-sm font-medium transition-all duration-200",
+            "bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)]",
+            "text-black/70 dark:text-white/70 hover:text-black/90 dark:hover:text-white/90",
+            "border border-black/10 dark:border-white/10",
+            className
+        ]}
+        title={`Switch to ${alternateLangLabel}`}
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span>{alternateLangLabel}</span>
+    </a>
+)}

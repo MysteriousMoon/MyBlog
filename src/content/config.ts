@@ -11,6 +11,7 @@ const postsCollection = defineCollection({
 		tags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
 		lang: z.string().optional().default(""),
+		alternateSlug: z.string().optional(), // Slug of alternate language version
 		slug: z.string().optional(),
 
 		/* For internal use */
