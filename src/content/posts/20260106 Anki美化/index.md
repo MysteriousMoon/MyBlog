@@ -11,7 +11,7 @@ draft: false
 
 在[从神经科学的视角，解析真正有效的学习方法|大脑是个预测机器 - Techleaf](https://techleaf.xyz/posts/neuroscience-effective-learning-methods/)一文中所提及的软件。
 
-省流：一款开源免费（IOS除外）的软件，用间隔复习算法让你更好的记住知识点。
+省流：一款开源免费（IOS不免费）的软件，用间隔复习算法让你更好的记住知识点。
 
 因为太难看改了一下界面，该文是分享插件的文章，就这样。
 
