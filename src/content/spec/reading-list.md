@@ -19,3 +19,4 @@
 | 人格：认识自己，做更好的你 | 丹尼尔·内特尔 | 人格心理学 心理学 | 中 | 2007 | 2026-01-09 | 14.3万 |  |
 | Beyond the DSM: toward a process-based alternative for diagnosis and mental health treatment | Hayes和Hofmann | PBT 心理学 心理治疗 | 高 | 2020 | 2026-01-10 | 8万（词） | |
 | 我们为什么生病 | Nesse,Randolph M. | 演化医学 | 低 | 1994 | 2026-01-12 | 17.5万 | |
+| Good reasons for bad feelings: insights from the frontier of evolutionary psychiatry | Nesse | 演化医学 心理学 | 中 | 2019 | 2026-01-13 | 9万（词） | |
