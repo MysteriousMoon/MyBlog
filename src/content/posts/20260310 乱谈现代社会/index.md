@@ -1,5 +1,5 @@
 ---
-title: 亲密关系的消亡，与复兴？（AI）
+title: 亲密关系的消亡（AI）
 published: 2026-03-10
 slug: intimacy-decline-and-revival
 description: "当熟人社会瓦解、个体被抛向市场、平台与制度，亲密关系为何越来越难？AI 陪伴、搭子关系与弱连接，是在替代亲密吗？"
