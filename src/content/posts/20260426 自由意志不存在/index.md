@@ -3,6 +3,7 @@ title: 自由意志并不存在|命定：没有自由意志的科学
 published: 2026-04-26
 slug: determinism-and-free-will
 description: "你以为你在自由选择，做着你想做的事情。然而神经科学家萨波斯基花了一本书的篇幅，用实验、大脑、基因和儿时经历，告诉你：那不过是事后的幻觉。但这不是坏消息。"
+image: "./cover.webp"
 tags: ["随想", "推荐"]
 category: 心情随笔
 draft: false
