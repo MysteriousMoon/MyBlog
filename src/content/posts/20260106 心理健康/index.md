@@ -6,7 +6,7 @@ description: "How to use this blog template."
 image: "./cover.webp"
 tags: ["Fuwari", "Blogging", "Customization"]
 category: Guides
-draft: ture
+draft: true
 ---
 
 总有一些语句，读完后令你久久不能忘记。
