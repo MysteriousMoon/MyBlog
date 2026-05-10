@@ -74,6 +74,54 @@
   img
     border-radius: 0.75rem
 
+  .md-row
+    display: flex
+    flex-flow: row nowrap
+    gap: 1.25rem
+    align-items: flex-start
+    margin: 1rem 0
+
+  .md-col
+    min-width: 0
+
+    > :first-child
+      margin-top: 0
+
+    > :last-child
+      margin-bottom: 0
+
+    img
+      width: 100%
+      height: auto
+      margin: 0
+
+  .md-col-1
+    flex: 1 1 0
+
+  .md-col-2
+    flex: 2 1 0
+
+  .md-col-3
+    flex: 3 1 0
+
+  .md-col-4
+    flex: 4 1 0
+
+  .md-col-5
+    flex: 5 1 0
+
+  .md-col-6
+    flex: 6 1 0
+
+  @media (max-width: 640px)
+    .md-row
+      flex-flow: column nowrap
+      gap: 0.5rem
+
+    .md-col
+      flex: none
+      width: 100%
+
   hr
     border-color: var(--line-divider)
     border-style: dashed

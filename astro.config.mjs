@@ -23,6 +23,10 @@ import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badg
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { FlashCardComponent } from "./src/plugins/rehype-component-flashcard.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
+import {
+	ColComponent,
+	RowComponent,
+} from "./src/plugins/rehype-component-wrap.mjs";
 import { rehypeConnectFlashcards } from "./src/plugins/rehype-connect-flashcards.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
@@ -133,6 +137,13 @@ export default defineConfig({
 						important: (x, y) => AdmonitionComponent(x, y, "important"),
 						caution: (x, y) => AdmonitionComponent(x, y, "caution"),
 						warning: (x, y) => AdmonitionComponent(x, y, "warning"),
+						row: (x, y) => RowComponent(x, y),
+						col1: (x, y) => ColComponent(x, y, 1),
+						col2: (x, y) => ColComponent(x, y, 2),
+						col3: (x, y) => ColComponent(x, y, 3),
+						col4: (x, y) => ColComponent(x, y, 4),
+						col5: (x, y) => ColComponent(x, y, 5),
+						col6: (x, y) => ColComponent(x, y, 6),
 					},
 				},
 			],
