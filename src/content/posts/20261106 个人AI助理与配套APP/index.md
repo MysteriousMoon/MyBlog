@@ -3,6 +3,7 @@ title: Agents team：一个 Mac 桌面端，加手机、平板、手表的配套
 published: 2026-11-06
 slug: personal-agents-team-features
 description: "介绍我自己开发的 Mac 桌面端 AI 助理“个人助理团队”以及它的手机/平板/手表配套app。"
+image: "./cover.webp"
 tags: ["工具", "创作"]
 category: 技术分享
 draft: false
